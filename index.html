@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="학생 명단을 무작위로 나누고 조 편성 결과를 저장하거나 공유하세요."
+    />
+    <title>모둠 만들기</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./grouping.js" defer></script>
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="site-header">
+        <a class="brand" href="./" aria-label="모둠 만들기 홈">
+          <span class="brand-mark" aria-hidden="true">M</span>
+          <span>모둠 만들기</span>
+        </a>
+        <span class="privacy-note">
+          <span class="privacy-dot" aria-hidden="true"></span>
+          명단은 이 브라우저에서만 처리돼요
+        </span>
+      </header>
+
+      <main>
+        <section class="intro" aria-labelledby="page-title">
+          <p class="eyebrow">CLASSROOM TOOL</p>
+          <h1 id="page-title">공정하고 간편하게,<br />오늘의 모둠을 만들어 보세요.</h1>
+          <p class="intro-copy">
+            학생 이름을 입력하고 편성 기준을 고르면<br class="desktop-break" />
+            인원이 균등한 모둠을 무작위로 구성해요.
+          </p>
+        </section>
+
+        <div class="workspace">
+          <section class="panel setup-panel" aria-labelledby="setup-title">
+            <div class="panel-heading">
+              <div>
+                <p class="step-label">STEP 1</p>
+                <h2 id="setup-title">학생과 기준 입력</h2>
+              </div>
+              <span class="heading-icon" aria-hidden="true">01</span>
+            </div>
+
+            <form id="group-form">
+              <div class="field">
+                <label for="student-list">학생 이름</label>
+                <p class="field-hint" id="student-hint">
+                  한 줄에 한 명씩 입력하거나 쉼표로 구분해 주세요.
+                </p>
+                <textarea
+                  id="student-list"
+                  name="students"
+                  rows="7"
+                  aria-describedby="student-hint student-count"
+                  placeholder="예)&#10;김하늘&#10;이서준&#10;박지우"
+                  required
+                ></textarea>
+                <div class="field-footer">
+                  <span id="student-count" class="count-label">학생 0명</span>
+                  <button type="button" class="text-button" id="clear-students">
+                    모두 지우기
+                  </button>
+                </div>
+              </div>
+
+              <fieldset class="criteria-field">
+                <legend>어떤 기준으로 나눌까요?</legend>
+                <div class="criteria-options">
+                  <label class="choice-card" for="mode-count">
+                    <input type="radio" name="mode" id="mode-count" value="groups" checked />
+                    <span class="radio-mark" aria-hidden="true"></span>
+                    <span class="choice-copy">
+                      <strong>모둠 수</strong>
+                      <small>몇 개 모둠으로 나눌까요?</small>
+                    </span>
+                  </label>
+                  <label class="choice-card" for="mode-size">
+                    <input type="radio" name="mode" id="mode-size" value="size" />
+                    <span class="radio-mark" aria-hidden="true"></span>
+                    <span class="choice-copy">
+                      <strong>모둠별 인원</strong>
+                      <small>한 모둠에 몇 명씩일까요?</small>
+                    </span>
+                  </label>
+                </div>
+                <div class="number-field">
+                  <label for="group-value" id="group-value-label">모둠 수</label>
+                  <div class="number-input-wrap">
+                    <input
+                      id="group-value"
+                      name="groupValue"
+                      type="number"
+                      min="1"
+                      step="1"
+                      value="4"
+                      inputmode="numeric"
+                      required
+                    />
+                    <span id="group-value-suffix">모둠</span>
+                  </div>
+                </div>
+              </fieldset>
+
+              <fieldset class="conflict-field">
+                <legend>서로 다른 모둠에 배정할 학생 <span>(선택)</span></legend>
+                <p class="field-hint" id="conflict-hint">
+                  한 줄에 학생 두 명을 쉼표로 구분해 입력해 주세요.
+                </p>
+                <textarea
+                  id="conflict-pairs"
+                  name="conflicts"
+                  rows="3"
+                  aria-describedby="conflict-hint conflict-duplicate-hint"
+                  placeholder="김하늘, 이서준&#10;박지우, 최민서"
+                ></textarea>
+                <p class="field-hint conflict-duplicate-hint" id="conflict-duplicate-hint">
+                  동명이인은 이름 뒤에 순번을 붙여 구분해요. 예: 김하늘#2
+                </p>
+              </fieldset>
+
+              <button type="submit" class="button button-primary button-wide" id="create-groups">
+                <span aria-hidden="true">✦</span>
+                모둠 만들기
+              </button>
+            </form>
+
+            <div class="saved-section" aria-labelledby="saved-title">
+              <div class="saved-heading">
+                <div>
+                  <p class="step-label">MY LIST</p>
+                  <h3 id="saved-title">저장한 모둠</h3>
+                </div>
+                <span id="saved-count" class="saved-count">0</span>
+              </div>
+              <p class="saved-empty" id="saved-empty">
+                저장한 결과가 여기에 표시돼요.
+              </p>
+              <ul class="saved-list" id="saved-list" aria-label="저장한 모둠 목록"></ul>
+              <p class="storage-hint">저장된 결과는 이 브라우저에만 보관돼요.</p>
+            </div>
+          </section>
+
+          <section class="panel result-panel" aria-labelledby="result-title">
+            <div class="panel-heading result-heading">
+              <div>
+                <p class="step-label">STEP 2</p>
+                <h2 id="result-title">모둠 편성 결과</h2>
+              </div>
+              <span class="result-badge" id="result-summary">편성 전</span>
+            </div>
+
+            <div class="result-actions" id="result-actions" hidden>
+              <label class="save-name-field" for="save-name">
+                <span class="visually-hidden">저장할 이름</span>
+                <input id="save-name" type="text" maxlength="60" placeholder="저장 이름 (선택)" />
+              </label>
+              <button type="button" class="button button-secondary" id="save-result">
+                <span aria-hidden="true">▣</span> 저장
+              </button>
+              <button type="button" class="button button-secondary" id="download-result">
+                <span aria-hidden="true">↓</span> CSV
+              </button>
+              <button type="button" class="button button-secondary" id="copy-result">
+                <span aria-hidden="true">▢</span> 복사
+              </button>
+              <button type="button" class="button button-secondary print-button" id="print-result">
+                <span aria-hidden="true">▤</span> 인쇄
+              </button>
+            </div>
+
+            <div id="status-message" class="status-message" role="status" aria-live="polite"></div>
+            <div id="result-content" class="result-content">
+              <div class="empty-state">
+                <div class="empty-illustration" aria-hidden="true">
+                  <span class="person person-one"></span>
+                  <span class="person person-two"></span>
+                  <span class="person person-three"></span>
+                  <span class="person person-four"></span>
+                  <span class="sparkle sparkle-one">✦</span>
+                  <span class="sparkle sparkle-two">✦</span>
+                </div>
+                <h3>아직 모둠이 없어요</h3>
+                <p>학생 명단과 기준을 입력하고<br />모둠 만들기를 눌러 주세요.</p>
+              </div>
+            </div>
+            <div id="result-text" class="result-text" tabindex="0" aria-label="모둠 결과 텍스트" hidden></div>
+            <button type="button" class="button button-quiet button-wide" id="reshuffle" hidden>
+              ↻ &nbsp;다시 섞기
+            </button>
+          </section>
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <span>교실에서 바로 쓰는 작은 도구</span>
+        <span>이 페이지의 학생 명단은 서버로 전송되지 않습니다.</span>
+      </footer>
+    </div>
+  </body>
+</html>
